@@ -61,6 +61,8 @@ let checkWidth = '';
 let left;
 let index;
 
+padding_gan = gantchart.style.marginLeft;
+console.log(padding_gan);
 
 const move = function moveFun(event) {
 
@@ -86,31 +88,34 @@ gantchart.addEventListener('mousemove', { width: width, flag: flag, x: x, handle
 
 let widthChan = function widthChan(e) {
     flag = this.flag;
+    console.log('flag:', flag)
     x = e.clientX;
     e.stopPropagation();
     width = parseFloat(changeWidth[this.index].style.width.replace(/px/, ''));
     index = this.index;
-
+    resultPHP(x-width, width);
 }
 let widthChanR = function widthChanR(e) {
     x = e.clientX;
     flag = this.flag;
+    console.log('flag:', flag)
     left = parseFloat(chart[this.index].style.left.replace(/px/, ''));
     width = parseFloat(changeWidth[this.index].style.width.replace(/px/, ''));
     index = this.index;
     checkWidth = parseFloat(changeWidth[this.index].style.width.replace(/px/, ''));
-
-
+    resultPHP(x, width);
 }
 
 
 leftDrag.forEach((value, index) => {
+    console.log('leftDrag')
     value.addEventListener('mousedown', { index: index, flag: 'leftOK', handleEvent: widthChan }, false)
     value.addEventListener('click', { index: index, flag: 'NO', handleEvent: widthChan }, false);
 });
 
 
 rightDrag.forEach((value, index) => {
+    console.log('rightDrag')
     value.addEventListener('mousedown', { index: index, flag: 'rightOK', handleEvent: widthChanR }, false)
     value.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -119,3 +124,23 @@ rightDrag.forEach((value, index) => {
 });
 
 window.addEventListener('click', () => { flag = 'NO'; }, false);
+
+let resultPHP = function(x, width){
+    var req = new XMLHttpRequest();
+
+    var result = document.getElementById('result_php');
+    req.open('GET', 'datePHP.php?x=' + encodeURIComponent(x) + '&width=' + encodeURIComponent(width));
+    req.send(null);
+    req.onreadystatechange = function(){
+        if(req.readyState === 4){
+            console.log('start')
+            if(req.status == 200){
+                console.log('ok')
+                result.innerHTML = req.responseText;
+            }
+            else{
+                console.log(req);
+            }
+        }
+    }
+}
